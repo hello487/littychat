@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Litty Chat - 注册</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+            body {
+        background: #0a0a1a;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .bg-glow {
+        position: fixed;
+        border-radius: 50%;
+        filter: blur(120px);
+        pointer-events: none;
+    }
+
+    .bg-glow-1 {
+        width: 500px;
+        height: 500px;
+        background: rgba(139, 92, 246, 0.2);
+        top: -150px;
+        left: -100px;
+        animation: float 15s infinite ease-in-out;
+    }
+
+    .bg-glow-2 {
+        width: 400px;
+        height: 400px;
+        background: rgba(236, 72, 153, 0.15);
+        bottom: -100px;
+        right: -100px;
+        animation: float 20s infinite ease-in-out reverse;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        33% { transform: translate(40px, -30px) scale(1.1); }
+        66% { transform: translate(-20px, 40px) scale(0.9); }
+    }
+
+    .register-card {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(40px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 24px;
+        padding: 40px;
+        width: 100%;
+        max-width: 420px;
+        position: relative;
+        z-index: 1;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(139, 92, 246, 0.1);
+        animation: cardIn 0.6s ease;
+    }
+
+    @keyframes cardIn {
+        from { opacity: 0; transform: translateY(30px) scale(0.95); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .logo {
+        text-align: center;
+        margin-bottom: 8px;
+        font-size: 28px;
+        font-weight: 700;
+    }
+
+    .logo span:first-child { color: #ec4899; }
+    .logo span:last-child { color: #c4b5fd; }
+
+    .subtitle {
+        text-align: center;
+        color: #71717a;
+        font-size: 14px;
+        margin-bottom: 32px;
+    }
+
+    .form-row {
+        display: flex;
+        gap: 12px;
+    }
+
+    .form-group {
+        margin-bottom: 16px;
+        flex: 1;
+    }
+
+    .form-group label {
+        display: block;
+        color: #a1a1aa;
+        font-size: 12px;
+        margin-bottom: 6px;
+        padding-left: 4px;
+        transition: color 0.3s;
+    }
+
+    .form-group:focus-within label {
+        color: #c4b5fd;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 12px 14px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        color: #f5f3ff;
+        font-size: 14px;
+        outline: none;
+        transition: all 0.3s;
+    }
+
+    .form-input:focus {
+        border-color: rgba(139, 92, 246, 0.5);
+        background: rgba(255, 255, 255, 0.05);
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1), 0 0 20px rgba(139, 92, 246, 0.1);
+    }
+
+    .gender-group {
+        display: flex;
+        gap: 8px;
+        margin-top: 4px;
+    }
+
+    .gender-option {
+        flex: 1;
+        position: relative;
+    }
+
+    .gender-option input {
+        position: absolute;
+        opacity: 0;
+    }
+
+    .gender-option label {
+        display: block;
+        padding: 10px;
+        text-align: center;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 10px;
+        color: #71717a;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.25s;
+        margin: 0;
+    }
+
+    .gender-option input:checked + label {
+        border-color: rgba(139, 92, 246, 0.5);
+        background: rgba(139, 92, 246, 0.15);
+        color: #c4b5fd;
+    }
+
+    .register-btn {
+        width: 100%;
+        padding: 14px;
+        margin-top: 8px;
+        background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+        border: none;
+        border-radius: 14px;
+        color: white;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .register-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(124, 58, 237, 0.4);
+    }
+
+    .footer {
+        text-align: center;
+        margin-top: 20px;
+        color: #71717a;
+        font-size: 13px;
+    }
+
+    .footer a {
+        color: #c4b5fd;
+        text-decoration: none;
+    }
+</style>
+</head>
+<body>
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+    <div class="register-card">
+    <h1 class="logo"><span>Litty</span> <span>Chat</span></h1>
+    <p class="subtitle">创建账户，开始使用 AI</p>
+
+    <form id="registerForm">
+        <div class="form-row">
+            <div class="form-group">
+                <label for="surname">姓氏</label>
+                <input type="text" id="surname" class="form-input" placeholder="姓氏" required>
+            </div>
+            <div class="form-group">
+                <label for="name">名称</label>
+                <input type="text" id="name" class="form-input" placeholder="名称" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="email">电子邮箱</label>
+            <input type="email" id="email" class="form-input" placeholder="your@email.com" required>
+        </div>
+
+        <div class="form-group">
+            <label>性别</label>
+            <div class="gender-group">
+                <div class="gender-option">
+                    <input type="radio" id="male" name="gender" value="male" checked>
+                    <label for="male">男</label>
+                </div>
+                <div class="gender-option">
+                    <input type="radio" id="female" name="gender" value="female">
+                    <label for="female">女</label>
+                </div>
+                <div class="gender-option">
+                    <input type="radio" id="other" name="gender" value="other">
+                    <label for="other">其他</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="password">密码</label>
+            <input type="password" id="password" class="form-input" placeholder="设置密码" required>
+        </div>
+
+        <div class="form-group">
+            <label for="confirmPassword">确认密码</label>
+            <input type="password" id="confirmPassword" class="form-input" placeholder="再次输入密码" required>
+        </div>
+
+        <button type="submit" class="register-btn">注 册</button>
+    </form>
+
+    <div class="footer">
+        已有账户？<a href="dengli.html">立即登录</a>
+    </div>
+</div>
+
+<script>
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.querySelector('.register-btn');
+
+        if (document.getElementById('password').value !== document.getElementById('confirmPassword').value) {
+            alert('两次输入的密码不一致');
+            return;
+        }
+
+        const data = {
+            surname: document.getElementById('surname').value,
+            name: document.getElementById('name').value,
+            email: document.getElementById('email').value,
+            gender: document.querySelector('input[name="gender"]:checked').value,
+            password: document.getElementById('password').value
+        };
+
+        btn.textContent = '注册中...';
+        btn.disabled = true;
+
+        try {
+            const apiBase = window.electronAPI ? await window.electronAPI.getConfig('api-base') || 'http://192.168.10.9:8000' : 'http://192.168.10.9:8000';
+            const res = await fetch(`${apiBase}/api/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            const result = await res.json();
+
+            if (!res.ok) {
+                throw new Error(result.detail || '注册失败');
+            }
+
+            alert('注册成功，请登录');
+            window.location.href = 'dengli.html';
+
+        } catch (err) {
+            alert(err.message);
+            btn.textContent = '注 册';
+            btn.disabled = false;
+        }
+    });
+</script>
+</body>
+</html>

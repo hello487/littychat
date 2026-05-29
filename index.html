@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Litty Chat - 登录</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0a1a;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 动态光晕背景 */
+        .bg-glow {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(120px);
+            pointer-events: none;
+        }
+
+        .bg-glow-1 {
+            width: 500px;
+            height: 500px;
+            background: rgba(139, 92, 246, 0.2);
+            top: -150px;
+            left: -100px;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        .bg-glow-2 {
+            width: 400px;
+            height: 400px;
+            background: rgba(236, 72, 153, 0.15);
+            bottom: -100px;
+            right: -100px;
+            animation: float 20s infinite ease-in-out reverse;
+        }
+
+        .bg-glow-3 {
+            width: 300px;
+            height: 300px;
+            background: rgba(139, 92, 246, 0.1);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: pulse 10s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(40px, -30px) scale(1.1); }
+            66% { transform: translate(-20px, 40px) scale(0.9); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.8; }
+        }
+
+        /* 登录卡片 */
+        .login-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 48px 40px;
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+            z-index: 1;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(139, 92, 246, 0.1);
+            animation: cardIn 0.6s ease;
+        }
+
+        @keyframes cardIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* 标题 */
+        .logo {
+            text-align: center;
+            margin-bottom: 8px;
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .logo span:first-child {
+            color: #ec4899;
+            text-shadow: 0 0 30px rgba(236, 72, 153, 0.4);
+        }
+
+        .logo span:last-child {
+            color: #c4b5fd;
+            text-shadow: 0 0 30px rgba(196, 181, 253, 0.3);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #71717a;
+            font-size: 14px;
+            margin-bottom: 40px;
+        }
+
+        /* 输入框 */
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            color: #a1a1aa;
+            font-size: 13px;
+            margin-bottom: 8px;
+            padding-left: 4px;
+            transition: color 0.3s;
+        }
+
+        .form-group:focus-within label {
+            color: #c4b5fd;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            color: #f5f3ff;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .form-input::placeholder {
+            color: #52525b;
+        }
+
+        .form-input:focus {
+            border-color: rgba(139, 92, 246, 0.5);
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1), 0 0 20px rgba(139, 92, 246, 0.1);
+        }
+
+        /* 密码可见切换 */
+        .password-wrap {
+            position: relative;
+        }
+
+        .toggle-pwd {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #71717a;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 4px;
+            transition: color 0.3s;
+        }
+
+        .toggle-pwd:hover {
+            color: #c4b5fd;
+        }
+
+        .form-input.has-toggle {
+            padding-right: 44px;
+        }
+
+        /* 记住我 */
+        .remember-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 0 4px;
+        }
+
+        .remember-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #a1a1aa;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .remember-label input {
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 4px;
+            background: rgba(255,255,255,0.05);
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .remember-label input:checked {
+            background: #8b5cf6;
+            border-color: #8b5cf6;
+        }
+
+        .remember-label input:checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        /* 登录按钮 */
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+            border: none;
+            border-radius: 14px;
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .login-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .login-btn:hover::before {
+            left: 100%;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(124, 58, 237, 0.4);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* 加载动画 */
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+
+        .login-btn.loading .spinner {
+            display: inline-block;
+        }
+
+        .login-btn.loading .btn-text {
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 分割线 */
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 24px 0;
+            color: #52525b;
+            font-size: 12px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255,255,255,0.08);
+        }
+
+        .divider span {
+            padding: 0 12px;
+        }
+
+        /* 第三方登录 */
+        .social-login {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .social-btn {
+            flex: 1;
+            padding: 10px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            color: #a1a1aa;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .social-btn:hover {
+            background: rgba(255,255,255,0.06);
+            border-color: rgba(139, 92, 246, 0.3);
+            color: #c4b5fd;
+        }
+
+        /* 底部链接 */
+        .footer-links {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 24px;
+            padding: 0 4px;
+        }
+
+        .footer-links a {
+            color: #71717a;
+            font-size: 13px;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: #c4b5fd;
+        }
+
+        /* Toast 提示 */
+        .toast {
+            position: fixed;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            padding: 12px 24px;
+            border-radius: 12px;
+            color: white;
+            font-size: 14px;
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .toast.error {
+            background: rgba(239, 68, 68, 0.9);
+        }
+
+        .toast.success {
+            background: rgba(34, 197, 94, 0.9);
+        }
+
+        /* 装饰粒子 */
+        .particle {
+            position: fixed;
+            width: 4px;
+            height: 4px;
+            background: rgba(139, 92, 246, 0.6);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: particleFloat 8s infinite linear;
+        }
+
+        @keyframes particleFloat {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+        }
+
+        /* 输入框错误状态 */
+        .form-input.error {
+            border-color: rgba(239, 68, 68, 0.5);
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+
+        .error-msg {
+            color: #ef4444;
+            font-size: 12px;
+            margin-top: 6px;
+            padding-left: 4px;
+            opacity: 0;
+            transform: translateY(-4px);
+            transition: all 0.3s;
+        }
+
+        .error-msg.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+    <div class="bg-glow bg-glow-3"></div>
+
+    <div class="login-card">
+        <h1 class="logo"><span>Litty</span> <span>Chat</span></h1>
+        <p class="subtitle">登录您的账户，开启 AI 之旅</p>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">电子邮箱</label>
+                <input type="email" id="email" class="form-input" placeholder="your@email.com" required>
+                <div class="error-msg" id="emailError">请输入有效的邮箱地址</div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">密码</label>
+                <div class="password-wrap">
+                    <input type="password" id="password" class="form-input has-toggle" placeholder="输入密码" required>
+                    <button type="button" class="toggle-pwd" id="togglePwd" title="显示/隐藏密码">👁</button>
+                </div>
+                <div class="error-msg" id="pwdError">密码不能为空</div>
+            </div>
+
+            <div class="remember-row">
+                <label class="remember-label">
+                    <input type="checkbox" id="remember">
+                    <span>记住我</span>
+                </label>
+                <a href="forgot.html" style="color:#71717a;font-size:13px;text-decoration:none;transition:color 0.3s;" onmouseover="this.style.color='#c4b5fd'" onmouseout="this.style.color='#71717a'">忘记密码？</a>
+            </div>
+
+            <button type="submit" class="login-btn" id="loginBtn">
+                <span class="spinner"></span>
+                <span class="btn-text">登 录</span>
+            </button>
+        </form>
+
+        <div class="divider"><span>或使用以下方式登录</span></div>
+
+        <div class="social-login">
+            <button class="social-btn" id="googleBtn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                Google
+            </button>
+            <button class="social-btn" id="githubBtn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                GitHub
+            </button>
+        </div>
+
+        <div class="footer-links">
+            <span style="color:#52525b;font-size:13px;">还没有账户？</span>
+            <a href="zhuce.html">注册账户</a>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // 生成装饰粒子
+        for (let i = 0; i < 20; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            p.style.left = Math.random() * 100 + 'vw';
+            p.style.animationDelay = Math.random() * 8 + 's';
+            p.style.animationDuration = (6 + Math.random() * 6) + 's';
+            document.body.appendChild(p);
+        }
+
+        // 密码可见切换
+        const togglePwd = document.getElementById('togglePwd');
+        const passwordInput = document.getElementById('password');
+        togglePwd.addEventListener('click', () => {
+            const isPassword = passwordInput.type === 'password';
+            passwordInput.type = isPassword ? 'text' : 'password';
+            togglePwd.textContent = isPassword ? '🙈' : '👁';
+        });
+
+        // 记住我 - 页面加载时恢复
+        const rememberCheckbox = document.getElementById('remember');
+        const savedEmail = localStorage.getItem('rememberedEmail');
+        if (savedEmail) {
+            document.getElementById('email').value = savedEmail;
+            rememberCheckbox.checked = true;
+        }
+
+        // Toast 提示
+        function showToast(msg, type = 'error') {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // 输入验证
+        function validateEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        // 清除错误状态
+        function clearErrors() {
+            document.querySelectorAll('.form-input').forEach(el => el.classList.remove('error'));
+            document.querySelectorAll('.error-msg').forEach(el => el.classList.remove('show'));
+        }
+
+        // 登录提交
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearErrors();
+
+            const email = document.getElementById('email').value.trim();
+            const password = passwordInput.value;
+            const btn = document.getElementById('loginBtn');
+
+            // 前端验证
+            let hasError = false;
+            if (!validateEmail(email)) {
+                document.getElementById('email').classList.add('error');
+                document.getElementById('emailError').classList.add('show');
+                hasError = true;
+            }
+            if (!password) {
+                passwordInput.classList.add('error');
+                document.getElementById('pwdError').classList.add('show');
+                hasError = true;
+            }
+            if (hasError) return;
+
+            btn.classList.add('loading');
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('http://192.168.10.9:8000/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({
+                        username: email,
+                        password: password
+                    })
+                });
+                const data = await res.json();
+
+                if (res.ok) {
+                    // 记住我
+                    if (rememberCheckbox.checked) {
+                        localStorage.setItem('rememberedEmail', email);
+                    } else {
+                        localStorage.removeItem('rememberedEmail');
+                    }
+                    localStorage.setItem('token', data.access_token);
+                    showToast('登录成功！正在跳转...', 'success');
+                    setTimeout(() => location.href = 'index1.html', 800);
+                } else {
+                    showToast(data.detail || '登录失败，请检查账号密码');
+                }
+            } catch (err) {
+                showToast('网络错误，请检查后端服务是否运行');
+            } finally {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }
+        });
+
+        // 第三方登录占位
+        document.getElementById('googleBtn').addEventListener('click', () => {
+            showToast('Google 登录功能开发中...');
+        });
+        document.getElementById('githubBtn').addEventListener('click', () => {
+            showToast('GitHub 登录功能开发中...');
+        });
+
+        // 输入时清除错误
+        document.getElementById('email').addEventListener('input', clearErrors);
+        passwordInput.addEventListener('input', clearErrors);
+    </script>
+</body>
+</html>
